@@ -1,0 +1,20 @@
+# Rolling Update Deployment - Terraform Example Values
+
+# Application version
+app_version = "1.0.0"
+
+# Number of replicas
+replicas = 4
+
+# Rolling update strategy
+max_surge       = "1"
+max_unavailable = "1"
+min_ready_seconds = 5
+
+# Zero-downtime configuration:
+# max_surge       = "1"
+# max_unavailable = "0"
+
+# Fast update configuration:
+# max_surge       = "50%"
+# max_unavailable = "50%"

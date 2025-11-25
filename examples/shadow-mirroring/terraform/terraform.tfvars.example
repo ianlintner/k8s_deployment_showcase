@@ -1,0 +1,22 @@
+# Shadow/Mirroring Deployment - Terraform Example Values
+
+# Enable shadow deployment
+shadow_enabled = true
+
+# Replicas
+production_replicas = 3
+shadow_replicas     = 3
+
+# Versions
+production_version = "1.0.0"
+shadow_version     = "2.0.0"
+
+# Enable Istio sidecar injection (requires Istio installed)
+# enable_istio_injection = true
+
+# Custom namespace
+# namespace = "my-shadow"
+
+# Promote shadow to production:
+# shadow_enabled = false
+# production_version = "2.0.0"

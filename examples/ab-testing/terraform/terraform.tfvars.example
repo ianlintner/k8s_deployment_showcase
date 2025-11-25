@@ -1,0 +1,20 @@
+# A/B Testing Deployment - Terraform Example Values
+
+# Enable both versions
+version_a_enabled = true
+version_b_enabled = true
+
+# Replicas for each version
+version_a_replicas = 3
+version_b_replicas = 3
+
+# Version labels
+version_a_label = "A"
+version_b_label = "B"
+
+# Custom namespace
+# namespace = "my-ab-testing"
+
+# Rollout winner (disable the losing version):
+# version_a_enabled = false
+# version_b_replicas = 6

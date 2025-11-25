@@ -8,6 +8,7 @@ This repository demonstrates the major Kubernetes deployment strategies used in 
 
 - ✅ Complete Kubernetes manifests
 - ✅ Helm charts for flexible deployments
+- ✅ Terraform configurations for infrastructure-as-code
 - ✅ Detailed documentation
 - ✅ Working sample applications
 - ✅ Step-by-step deployment guides
@@ -41,8 +42,13 @@ k8s_deployment_showcase/
     │   │   ├── deployment-blue.yaml
     │   │   ├── deployment-green.yaml
     │   │   └── service.yaml
-    │   └── helm/
-    │       └── blue-green/
+    │   ├── helm/
+    │   │   └── blue-green/
+    │   └── terraform/
+    │       ├── main.tf
+    │       ├── variables.tf
+    │       ├── outputs.tf
+    │       └── providers.tf
     │
     ├── canary/                        # Canary deployment
     │   ├── README.md
@@ -52,8 +58,13 @@ k8s_deployment_showcase/
     │   │   ├── deployment-canary.yaml
     │   │   ├── service.yaml
     │   │   └── ingress-weighted.yaml
-    │   └── helm/
-    │       └── canary/
+    │   ├── helm/
+    │   │   └── canary/
+    │   └── terraform/
+    │       ├── main.tf
+    │       ├── variables.tf
+    │       ├── outputs.tf
+    │       └── providers.tf
     │
     ├── rolling-update/                # Rolling Update deployment
     │   ├── README.md
@@ -61,8 +72,13 @@ k8s_deployment_showcase/
     │   │   ├── namespace.yaml
     │   │   ├── deployment.yaml
     │   │   └── service.yaml
-    │   └── helm/
-    │       └── rolling-update/
+    │   ├── helm/
+    │   │   └── rolling-update/
+    │   └── terraform/
+    │       ├── main.tf
+    │       ├── variables.tf
+    │       ├── outputs.tf
+    │       └── providers.tf
     │
     ├── ab-testing/                    # A/B Testing deployment
     │   ├── README.md
@@ -72,8 +88,13 @@ k8s_deployment_showcase/
     │   │   ├── deployment-b.yaml
     │   │   ├── service.yaml
     │   │   └── ingress.yaml
-    │   └── helm/
-    │       └── ab-testing/
+    │   ├── helm/
+    │   │   └── ab-testing/
+    │   └── terraform/
+    │       ├── main.tf
+    │       ├── variables.tf
+    │       ├── outputs.tf
+    │       └── providers.tf
     │
     └── shadow-mirroring/              # Shadow/Mirroring deployment
         ├── README.md
@@ -83,8 +104,13 @@ k8s_deployment_showcase/
         │   ├── deployment-shadow.yaml
         │   ├── service.yaml
         │   └── istio-mirroring.yaml
-        └── helm/
-            └── shadow-mirroring/
+        ├── helm/
+        │   └── shadow-mirroring/
+        └── terraform/
+            ├── main.tf
+            ├── variables.tf
+            ├── outputs.tf
+            └── providers.tf
 ```
 
 ## 🚀 Quick Start
@@ -94,6 +120,7 @@ k8s_deployment_showcase/
 - Kubernetes cluster (v1.19+)
 - kubectl configured to access your cluster
 - Helm 3.x (optional, for Helm deployments)
+- Terraform 1.0+ (optional, for Terraform deployments)
 - NGINX Ingress Controller (for canary/A/B testing with weighted routing)
 - Istio (for shadow/mirroring deployments)
 
@@ -108,6 +135,11 @@ kubectl apply -f examples/blue-green/manifests/service.yaml
 # Using Helm
 helm install blue-green examples/blue-green/helm/blue-green \
   -n blue-green-demo --create-namespace
+
+# Using Terraform
+cd examples/blue-green/terraform
+terraform init
+terraform apply
 ```
 
 ### Deploy Canary Example
@@ -123,6 +155,11 @@ kubectl apply -f examples/canary/manifests/service.yaml
 helm install canary examples/canary/helm/canary \
   -n canary-demo --create-namespace \
   --set canary.enabled=true
+
+# Using Terraform
+cd examples/canary/terraform
+terraform init
+terraform apply -var='canary_enabled=true'
 ```
 
 ### Deploy Rolling Update Example
@@ -134,6 +171,11 @@ kubectl apply -f examples/rolling-update/manifests/
 # Using Helm
 helm install rolling-update examples/rolling-update/helm/rolling-update \
   -n rolling-update-demo --create-namespace
+
+# Using Terraform
+cd examples/rolling-update/terraform
+terraform init
+terraform apply
 ```
 
 ### Deploy A/B Testing Example
@@ -145,6 +187,11 @@ kubectl apply -f examples/ab-testing/manifests/
 # Using Helm
 helm install ab-testing examples/ab-testing/helm/ab-testing \
   -n ab-testing-demo --create-namespace
+
+# Using Terraform
+cd examples/ab-testing/terraform
+terraform init
+terraform apply
 ```
 
 ### Deploy Shadow/Mirroring Example
@@ -159,6 +206,11 @@ helm install shadow examples/shadow-mirroring/helm/shadow-mirroring \
   --set shadow.enabled=true \
   --set istio.enabled=true \
   --set mirroring.enabled=true
+
+# Using Terraform
+cd examples/shadow-mirroring/terraform
+terraform init
+terraform apply -var='shadow_enabled=true'
 ```
 
 ## 📊 Strategy Comparison
@@ -223,12 +275,16 @@ helm uninstall canary -n canary-demo
 helm uninstall rolling-update -n rolling-update-demo
 helm uninstall ab-testing -n ab-testing-demo
 helm uninstall shadow -n shadow-demo
+
+# Or using Terraform (from each example's terraform directory)
+terraform destroy
 ```
 
 ## 📚 Additional Resources
 
 - [Kubernetes Deployments Documentation](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
 - [Helm Documentation](https://helm.sh/docs/)
+- [Terraform Kubernetes Provider](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs)
 - [NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/)
 - [Istio Traffic Management](https://istio.io/latest/docs/concepts/traffic-management/)
 

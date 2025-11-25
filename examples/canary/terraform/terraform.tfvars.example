@@ -1,0 +1,15 @@
+# Canary Deployment - Terraform Example Values
+
+# Enable canary deployment
+canary_enabled = true
+
+# Traffic split: 90% stable, 10% canary
+stable_replicas = 9
+canary_replicas = 1
+
+# Versions
+# stable_version = "1.0.0"
+# canary_version = "2.0.0"
+
+# Custom namespace
+# namespace = "my-canary"
