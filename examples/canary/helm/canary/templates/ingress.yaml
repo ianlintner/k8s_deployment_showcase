@@ -1,0 +1,51 @@
+{{- if .Values.ingress.enabled }}
+{{- if .Values.stable.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "canary.fullname" . }}-stable
+  labels:
+    {{- include "canary.labels" . | nindent 4 }}
+  annotations:
+    {{- toYaml .Values.ingress.annotations | nindent 4 }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "canary.fullname" . }}-stable
+                port:
+                  number: {{ .Values.service.port }}
+{{- end }}
+---
+{{- if .Values.canary.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "canary.fullname" . }}-canary
+  labels:
+    {{- include "canary.labels" . | nindent 4 }}
+  annotations:
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-weight: {{ .Values.canary.weight | quote }}
+    {{- toYaml .Values.ingress.annotations | nindent 4 }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "canary.fullname" . }}-canary
+                port:
+                  number: {{ .Values.service.port }}
+{{- end }}
+{{- end }}

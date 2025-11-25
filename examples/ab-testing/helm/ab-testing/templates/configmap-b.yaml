@@ -1,0 +1,68 @@
+{{- if .Values.versionB.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "ab-testing.fullname" . }}-b-html
+  labels:
+    {{- include "ab-testing.labels" . | nindent 4 }}
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>A/B Testing Demo - Version B</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                margin: 0;
+                background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);
+            }
+            .container {
+                text-align: center;
+                background: white;
+                padding: 40px 60px;
+                border-radius: 16px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            }
+            h1 { color: #134e5e; }
+            .version {
+                font-size: 72px;
+                font-weight: bold;
+                color: #28a745;
+                margin: 20px 0;
+            }
+            .label {
+                padding: 10px 20px;
+                background: #28a745;
+                color: white;
+                border-radius: 20px;
+                display: inline-block;
+                margin: 10px 0;
+            }
+            .new-feature {
+                background: #e8f5e9;
+                padding: 10px;
+                border-radius: 8px;
+                margin-top: 15px;
+                border: 2px dashed #28a745;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>A/B Testing Demo</h1>
+            <div class="version">{{ .Values.versionB.version }}</div>
+            <div class="label">VARIANT</div>
+            <p>This is Version <strong>B</strong> (Variant)</p>
+            <div class="new-feature">
+                ✨ New Feature: Enhanced UI ✨
+            </div>
+            <p><small>Deployed via Helm</small></p>
+        </div>
+    </body>
+    </html>
+{{- end }}

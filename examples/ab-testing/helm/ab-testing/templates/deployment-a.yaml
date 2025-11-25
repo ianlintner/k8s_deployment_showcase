@@ -1,0 +1,55 @@
+{{- if .Values.versionA.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ab-testing.fullname" . }}-a
+  labels:
+    {{- include "ab-testing.labels" . | nindent 4 }}
+    version: a
+spec:
+  replicas: {{ .Values.versionA.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "ab-testing.selectorLabels" . | nindent 6 }}
+      version: a
+  template:
+    metadata:
+      labels:
+        {{- include "ab-testing.selectorLabels" . | nindent 8 }}
+        version: a
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.versionA.image.repository }}:{{ .Values.versionA.image.tag }}"
+          imagePullPolicy: {{ .Values.versionA.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          env:
+            - name: APP_VERSION
+              value: {{ .Values.versionA.version | quote }}
+            - name: APP_COLOR
+              value: "blue"
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.probes.liveness.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.probes.readiness.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: html-config
+              mountPath: /usr/share/nginx/html
+      volumes:
+        - name: html-config
+          configMap:
+            name: {{ include "ab-testing.fullname" . }}-a-html
+{{- end }}

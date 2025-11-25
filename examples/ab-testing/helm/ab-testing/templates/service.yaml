@@ -1,0 +1,58 @@
+# Combined service (selects all pods)
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ab-testing.fullname" . }}
+  labels:
+    {{- include "ab-testing.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "ab-testing.selectorLabels" . | nindent 4 }}
+---
+{{- if .Values.versionA.enabled }}
+# Version A only service
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ab-testing.fullname" . }}-a
+  labels:
+    {{- include "ab-testing.labels" . | nindent 4 }}
+    version: a
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "ab-testing.selectorLabels" . | nindent 4 }}
+    version: a
+{{- end }}
+---
+{{- if .Values.versionB.enabled }}
+# Version B only service
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ab-testing.fullname" . }}-b
+  labels:
+    {{- include "ab-testing.labels" . | nindent 4 }}
+    version: b
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "ab-testing.selectorLabels" . | nindent 4 }}
+    version: b
+{{- end }}

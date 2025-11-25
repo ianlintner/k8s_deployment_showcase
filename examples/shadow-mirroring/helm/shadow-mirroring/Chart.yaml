@@ -1,0 +1,14 @@
+apiVersion: v2
+name: shadow-mirroring
+description: A Helm chart for Shadow/Mirroring deployment strategy demonstration
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - kubernetes
+  - deployment
+  - shadow
+  - mirroring
+  - release-strategy
+maintainers:
+  - name: K8s Deployment Showcase

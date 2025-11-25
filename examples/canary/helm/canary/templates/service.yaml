@@ -1,0 +1,58 @@
+# Combined service (selects all pods)
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "canary.fullname" . }}
+  labels:
+    {{- include "canary.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "canary.selectorLabels" . | nindent 4 }}
+---
+{{- if .Values.stable.enabled }}
+# Stable-only service
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "canary.fullname" . }}-stable
+  labels:
+    {{- include "canary.labels" . | nindent 4 }}
+    version: stable
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "canary.selectorLabels" . | nindent 4 }}
+    version: stable
+{{- end }}
+---
+{{- if .Values.canary.enabled }}
+# Canary-only service
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "canary.fullname" . }}-canary
+  labels:
+    {{- include "canary.labels" . | nindent 4 }}
+    version: canary
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "canary.selectorLabels" . | nindent 4 }}
+    version: canary
+{{- end }}

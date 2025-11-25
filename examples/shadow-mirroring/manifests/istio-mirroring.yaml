@@ -1,0 +1,81 @@
+# Istio traffic mirroring configuration
+# Requires Istio to be installed in the cluster
+
+# DestinationRule to define subsets
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: app-destination-rule
+  namespace: shadow-demo
+spec:
+  host: app-service
+  subsets:
+  - name: production
+    labels:
+      version: production
+  - name: shadow
+    labels:
+      version: shadow
+---
+# VirtualService with traffic mirroring
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: app-vs
+  namespace: shadow-demo
+spec:
+  hosts:
+  - app-service
+  - app-service.shadow-demo.svc.cluster.local
+  http:
+  - route:
+    - destination:
+        host: app-service
+        subset: production
+      weight: 100
+    # Mirror 100% of traffic to shadow
+    mirror:
+      host: app-service
+      subset: shadow
+    mirrorPercentage:
+      value: 100.0
+---
+# Gateway for external access (optional)
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: app-gateway
+  namespace: shadow-demo
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - shadow-demo.local
+---
+# VirtualService for Gateway
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: app-gateway-vs
+  namespace: shadow-demo
+spec:
+  hosts:
+  - shadow-demo.local
+  gateways:
+  - app-gateway
+  http:
+  - route:
+    - destination:
+        host: app-service
+        subset: production
+      weight: 100
+    mirror:
+      host: app-service
+      subset: shadow
+    mirrorPercentage:
+      value: 100.0

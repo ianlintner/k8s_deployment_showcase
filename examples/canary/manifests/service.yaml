@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service
+  namespace: canary-demo
+  labels:
+    app: showcase-app
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: showcase-app  # Selects both stable and canary pods
+---
+# Separate service for stable pods only
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-stable-service
+  namespace: canary-demo
+  labels:
+    app: showcase-app
+    version: stable
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: showcase-app
+    version: stable
+---
+# Separate service for canary pods only
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-canary-service
+  namespace: canary-demo
+  labels:
+    app: showcase-app
+    version: canary
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: showcase-app
+    version: canary

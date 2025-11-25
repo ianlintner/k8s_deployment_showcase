@@ -1,0 +1,58 @@
+{{- if .Values.versionA.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "ab-testing.fullname" . }}-a-html
+  labels:
+    {{- include "ab-testing.labels" . | nindent 4 }}
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>A/B Testing Demo - Version A</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                margin: 0;
+                background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            }
+            .container {
+                text-align: center;
+                background: white;
+                padding: 40px 60px;
+                border-radius: 16px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            }
+            h1 { color: #1e3c72; }
+            .version {
+                font-size: 72px;
+                font-weight: bold;
+                color: #0066cc;
+                margin: 20px 0;
+            }
+            .label {
+                padding: 10px 20px;
+                background: #0066cc;
+                color: white;
+                border-radius: 20px;
+                display: inline-block;
+                margin: 10px 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>A/B Testing Demo</h1>
+            <div class="version">{{ .Values.versionA.version }}</div>
+            <div class="label">CONTROL</div>
+            <p>This is Version <strong>A</strong> (Control)</p>
+            <p><small>Deployed via Helm</small></p>
+        </div>
+    </body>
+    </html>
+{{- end }}

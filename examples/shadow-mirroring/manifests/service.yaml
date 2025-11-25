@@ -1,0 +1,58 @@
+# Main service pointing to production
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service
+  namespace: shadow-demo
+  labels:
+    app: showcase-app
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: showcase-app
+    version: production
+---
+# Production-specific service
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-production-service
+  namespace: shadow-demo
+  labels:
+    app: showcase-app
+    version: production
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: showcase-app
+    version: production
+---
+# Shadow-specific service (for mirroring target)
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-shadow-service
+  namespace: shadow-demo
+  labels:
+    app: showcase-app
+    version: shadow
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: showcase-app
+    version: shadow

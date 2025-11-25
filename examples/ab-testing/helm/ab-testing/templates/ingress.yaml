@@ -1,0 +1,85 @@
+{{- if .Values.ingress.enabled }}
+{{- if .Values.versionA.enabled }}
+# Version A ingress (default)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "ab-testing.fullname" . }}-a
+  labels:
+    {{- include "ab-testing.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "ab-testing.fullname" . }}-a
+                port:
+                  number: {{ .Values.service.port }}
+{{- end }}
+---
+{{- if .Values.versionB.enabled }}
+# Version B ingress (header-based routing)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "ab-testing.fullname" . }}-b-header
+  labels:
+    {{- include "ab-testing.labels" . | nindent 4 }}
+  annotations:
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-by-header: {{ .Values.versionB.routing.header | quote }}
+    nginx.ingress.kubernetes.io/canary-by-header-value: {{ .Values.versionB.routing.headerValue | quote }}
+    {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "ab-testing.fullname" . }}-b
+                port:
+                  number: {{ .Values.service.port }}
+---
+# Version B ingress (cookie-based routing)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "ab-testing.fullname" . }}-b-cookie
+  labels:
+    {{- include "ab-testing.labels" . | nindent 4 }}
+  annotations:
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-by-cookie: {{ .Values.versionB.routing.cookie | quote }}
+    {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "ab-testing.fullname" . }}-b
+                port:
+                  number: {{ .Values.service.port }}
+{{- end }}
+{{- end }}

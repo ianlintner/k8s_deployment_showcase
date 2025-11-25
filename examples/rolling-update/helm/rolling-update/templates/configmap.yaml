@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "rolling-update.fullname" . }}-html
+  labels:
+    {{- include "rolling-update.labels" . | nindent 4 }}
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Rolling Update Demo</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                margin: 0;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+            .container {
+                text-align: center;
+                background: white;
+                padding: 40px 60px;
+                border-radius: 16px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            }
+            h1 { color: #667eea; }
+            .version { color: #764ba2; font-size: 24px; margin: 20px 0; }
+            .strategy {
+                padding: 10px 20px;
+                background: #667eea;
+                color: white;
+                border-radius: 20px;
+                display: inline-block;
+                margin: 10px 0;
+            }
+            .info {
+                background: #f8f9fa;
+                padding: 15px;
+                border-radius: 8px;
+                margin-top: 20px;
+                text-align: left;
+            }
+            .info p { margin: 5px 0; color: #555; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Rolling Update Demo</h1>
+            <p class="version">Version: {{ .Values.app.version }}</p>
+            <div class="strategy">ROLLING UPDATE</div>
+            <p>Gradual replacement of pods</p>
+            <div class="info">
+                <p><strong>maxSurge:</strong> {{ .Values.strategy.maxSurge }}</p>
+                <p><strong>maxUnavailable:</strong> {{ .Values.strategy.maxUnavailable }}</p>
+                <p><strong>minReadySeconds:</strong> {{ .Values.minReadySeconds }}</p>
+            </div>
+            <p><small>Deployed via Helm</small></p>
+        </div>
+    </body>
+    </html>
