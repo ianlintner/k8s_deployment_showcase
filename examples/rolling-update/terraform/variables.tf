@@ -23,13 +23,13 @@ variable "app_version" {
 }
 
 variable "max_surge" {
-  description = "Maximum number of pods that can be created above desired during update"
+  description = "Maximum number of pods that can be created above desired during update. Can be an absolute number (e.g., '1') or a percentage (e.g., '25%')."
   type        = string
   default     = "1"
 }
 
 variable "max_unavailable" {
-  description = "Maximum number of pods that can be unavailable during update"
+  description = "Maximum number of pods that can be unavailable during update. Can be an absolute number (e.g., '1') or a percentage (e.g., '25%')."
   type        = string
   default     = "1"
 }

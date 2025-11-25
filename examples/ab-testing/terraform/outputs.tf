@@ -29,13 +29,14 @@ output "version_b_service_name" {
 }
 
 output "test_commands" {
-  description = "Commands to test A/B routing"
+  description = "Commands to test A/B routing (run port-forward commands first)"
   value = {
-    test_version_a         = "curl http://localhost:8080"
-    test_version_b_header  = "curl -H 'X-Version: B' http://localhost:8080"
-    test_version_b_cookie  = "curl -b 'ab_test=version-b' http://localhost:8080"
     port_forward_a         = "kubectl port-forward svc/app-service-a -n ${var.namespace} 8080:80"
     port_forward_b         = "kubectl port-forward svc/app-service-b -n ${var.namespace} 8081:80"
+    test_version_a         = "curl http://localhost:8080  # After running port_forward_a"
+    test_version_b         = "curl http://localhost:8081  # After running port_forward_b"
+    test_version_b_header  = "curl -H 'X-Version: B' http://localhost:8080  # With ingress configured"
+    test_version_b_cookie  = "curl -b 'ab_test=version-b' http://localhost:8080  # With ingress configured"
   }
 }
 

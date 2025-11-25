@@ -15,7 +15,7 @@ output "traffic_ratio" {
 
 output "canary_percentage" {
   description = "Approximate percentage of traffic to canary"
-  value       = var.canary_enabled ? "${floor(var.canary_replicas * 100 / (var.stable_replicas + var.canary_replicas))}%" : "0%"
+  value       = var.canary_enabled && (var.stable_replicas + var.canary_replicas) > 0 ? "${floor(var.canary_replicas * 100 / (var.stable_replicas + var.canary_replicas))}%" : "0%"
 }
 
 output "service_name" {
