@@ -1,0 +1,64 @@
+# Default values for A/B testing deployment
+
+# Version A (Control) configuration
+versionA:
+  enabled: true
+  replicaCount: 3
+  version: "A"
+  image:
+    repository: nginx
+    tag: 1.25-alpine
+    pullPolicy: IfNotPresent
+
+# Version B (Variant) configuration  
+versionB:
+  enabled: true
+  replicaCount: 3
+  version: "B"
+  image:
+    repository: nginx
+    tag: 1.25-alpine
+    pullPolicy: IfNotPresent
+  routing:
+    # Header-based routing
+    header: "X-Version"
+    headerValue: "B"
+    # Cookie-based routing (cookie name)
+    cookie: "ab_test"
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+
+# Resource limits
+resources:
+  limits:
+    cpu: 200m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 64Mi
+
+# Probes configuration
+probes:
+  liveness:
+    path: /
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  readiness:
+    path: /
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+# Ingress configuration
+ingress:
+  enabled: false
+  className: nginx
+  host: ab-testing.local
+  annotations: {}
+
+# Namespace configuration
+namespace:
+  create: true
+  name: ab-testing-demo

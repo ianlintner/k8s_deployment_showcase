@@ -1,0 +1,57 @@
+{{- if .Values.green.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "blue-green.fullname" . }}-green-html
+  labels:
+    {{- include "blue-green.labels" . | nindent 4 }}
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Blue/Green Demo - Green</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                margin: 0;
+                background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);
+            }
+            .container {
+                text-align: center;
+                background: white;
+                padding: 40px 60px;
+                border-radius: 16px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            }
+            h1 { color: #134e5e; }
+            .version { color: #28a745; font-size: 24px; margin: 20px 0; }
+            .indicator {
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+                background: #28a745;
+                margin: 20px auto;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Blue/Green Deployment</h1>
+            <p class="version">Version: {{ .Values.green.version }}</p>
+            <div class="indicator">GREEN</div>
+            <p>This is the <strong>Green</strong> deployment</p>
+            <p><small>Deployed via Helm</small></p>
+        </div>
+    </body>
+    </html>
+{{- end }}

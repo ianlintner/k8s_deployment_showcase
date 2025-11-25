@@ -1,0 +1,126 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-b
+  namespace: ab-testing-demo
+  labels:
+    app: showcase-app
+    version: b
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: showcase-app
+      version: b
+  template:
+    metadata:
+      labels:
+        app: showcase-app
+        version: b
+    spec:
+      containers:
+      - name: app
+        image: nginx:1.25-alpine
+        ports:
+        - containerPort: 80
+        env:
+        - name: APP_VERSION
+          value: "B"
+        - name: APP_COLOR
+          value: "green"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        volumeMounts:
+        - name: html-config
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: html-config
+        configMap:
+          name: app-b-html
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-b-html
+  namespace: ab-testing-demo
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>A/B Testing Demo - Version B</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                margin: 0;
+                background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);
+            }
+            .container {
+                text-align: center;
+                background: white;
+                padding: 40px 60px;
+                border-radius: 16px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            }
+            h1 { color: #134e5e; }
+            .version {
+                font-size: 72px;
+                font-weight: bold;
+                color: #28a745;
+                margin: 20px 0;
+            }
+            .label {
+                padding: 10px 20px;
+                background: #28a745;
+                color: white;
+                border-radius: 20px;
+                display: inline-block;
+                margin: 10px 0;
+            }
+            .description {
+                color: #666;
+                margin-top: 20px;
+            }
+            .new-feature {
+                background: #e8f5e9;
+                padding: 10px;
+                border-radius: 8px;
+                margin-top: 15px;
+                border: 2px dashed #28a745;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>A/B Testing Demo</h1>
+            <div class="version">B</div>
+            <div class="label">VARIANT</div>
+            <p class="description">This is Version <strong>B</strong> (Variant)</p>
+            <div class="new-feature">
+                ✨ New Feature: Enhanced UI ✨
+            </div>
+            <p><small>Testing new layout and features</small></p>
+        </div>
+    </body>
+    </html>

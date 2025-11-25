@@ -1,0 +1,71 @@
+# NGINX Ingress with header-based and cookie-based routing for A/B testing
+# Requires NGINX Ingress Controller
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress-a
+  namespace: ab-testing-demo
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: ab-testing.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: app-service-a
+            port:
+              number: 80
+---
+# Version B ingress with header-based routing
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress-b-header
+  namespace: ab-testing-demo
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-by-header: "X-Version"
+    nginx.ingress.kubernetes.io/canary-by-header-value: "B"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: ab-testing.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: app-service-b
+            port:
+              number: 80
+---
+# Version B ingress with cookie-based routing
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress-b-cookie
+  namespace: ab-testing-demo
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-by-cookie: "ab_test"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: ab-testing.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: app-service-b
+            port:
+              number: 80

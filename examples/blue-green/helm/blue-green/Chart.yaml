@@ -1,0 +1,13 @@
+apiVersion: v2
+name: blue-green
+description: A Helm chart for Blue/Green deployment strategy demonstration
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - kubernetes
+  - deployment
+  - blue-green
+  - release-strategy
+maintainers:
+  - name: K8s Deployment Showcase

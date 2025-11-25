@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ab-testing-demo
+  labels:
+    app: ab-testing-demo
+    strategy: ab-testing

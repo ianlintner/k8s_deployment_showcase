@@ -1,0 +1,65 @@
+# Default values for blue-green deployment
+replicaCount: 3
+
+# Which color to route traffic to
+activeColor: blue
+
+# Blue deployment configuration
+blue:
+  enabled: true
+  version: "1.0.0"
+  image:
+    repository: nginx
+    tag: 1.25-alpine
+    pullPolicy: IfNotPresent
+
+# Green deployment configuration  
+green:
+  enabled: false
+  version: "2.0.0"
+  image:
+    repository: nginx
+    tag: 1.25-alpine
+    pullPolicy: IfNotPresent
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+
+# Resource limits
+resources:
+  limits:
+    cpu: 200m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 64Mi
+
+# Probes configuration
+probes:
+  liveness:
+    path: /
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  readiness:
+    path: /
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+# Ingress configuration
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: blue-green.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+# Namespace configuration
+namespace:
+  create: true
+  name: blue-green-demo

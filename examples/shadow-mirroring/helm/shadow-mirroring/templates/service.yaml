@@ -1,0 +1,59 @@
+# Main service pointing to production
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "shadow-mirroring.fullname" . }}
+  labels:
+    {{- include "shadow-mirroring.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "shadow-mirroring.selectorLabels" . | nindent 4 }}
+    version: production
+---
+{{- if .Values.production.enabled }}
+# Production-specific service
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "shadow-mirroring.fullname" . }}-production
+  labels:
+    {{- include "shadow-mirroring.labels" . | nindent 4 }}
+    version: production
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "shadow-mirroring.selectorLabels" . | nindent 4 }}
+    version: production
+{{- end }}
+---
+{{- if .Values.shadow.enabled }}
+# Shadow-specific service
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "shadow-mirroring.fullname" . }}-shadow
+  labels:
+    {{- include "shadow-mirroring.labels" . | nindent 4 }}
+    version: shadow
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "shadow-mirroring.selectorLabels" . | nindent 4 }}
+    version: shadow
+{{- end }}

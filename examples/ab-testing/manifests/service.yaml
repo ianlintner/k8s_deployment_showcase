@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service
+  namespace: ab-testing-demo
+  labels:
+    app: showcase-app
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: showcase-app  # Selects both version A and B
+---
+# Separate service for Version A only
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service-a
+  namespace: ab-testing-demo
+  labels:
+    app: showcase-app
+    version: a
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: showcase-app
+    version: a
+---
+# Separate service for Version B only
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service-b
+  namespace: ab-testing-demo
+  labels:
+    app: showcase-app
+    version: b
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: showcase-app
+    version: b

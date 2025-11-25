@@ -1,0 +1,65 @@
+# Default values for rolling-update deployment
+replicaCount: 4
+
+app:
+  version: "1.0.0"
+  color: "purple"
+
+image:
+  repository: nginx
+  tag: 1.25-alpine
+  pullPolicy: IfNotPresent
+
+# Rolling update strategy configuration
+strategy:
+  type: RollingUpdate
+  maxSurge: 1           # Max pods above desired during update
+  maxUnavailable: 1     # Max pods unavailable during update
+
+# Minimum time pod should be ready before available
+minReadySeconds: 5
+
+# Max time for deployment progress before considered failed
+progressDeadlineSeconds: 600
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+
+# Resource limits
+resources:
+  limits:
+    cpu: 200m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 64Mi
+
+# Probes configuration
+probes:
+  liveness:
+    path: /
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  readiness:
+    path: /
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+# Ingress configuration
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: rolling-update.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+# Namespace configuration
+namespace:
+  create: true
+  name: rolling-update-demo

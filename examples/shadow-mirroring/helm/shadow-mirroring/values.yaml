@@ -1,0 +1,63 @@
+# Default values for shadow-mirroring deployment
+
+# Production deployment configuration
+production:
+  enabled: true
+  replicaCount: 3
+  version: "1.0.0"
+  image:
+    repository: nginx
+    tag: 1.25-alpine
+    pullPolicy: IfNotPresent
+
+# Shadow deployment configuration  
+shadow:
+  enabled: false
+  replicaCount: 3
+  version: "2.0.0"
+  image:
+    repository: nginx
+    tag: 1.25-alpine
+    pullPolicy: IfNotPresent
+
+# Traffic mirroring configuration (requires Istio)
+mirroring:
+  enabled: false
+  percentage: 100  # Percentage of traffic to mirror (0-100)
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+
+# Resource limits
+resources:
+  limits:
+    cpu: 200m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 64Mi
+
+# Probes configuration
+probes:
+  liveness:
+    path: /
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  readiness:
+    path: /
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+# Istio configuration
+istio:
+  enabled: false
+  gateway:
+    enabled: false
+    host: shadow-demo.local
+
+# Namespace configuration
+namespace:
+  create: true
+  name: shadow-demo

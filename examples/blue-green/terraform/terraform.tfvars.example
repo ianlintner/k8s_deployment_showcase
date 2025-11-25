@@ -1,0 +1,15 @@
+# Blue/Green Deployment - Terraform Example Values
+
+# Switch to green deployment
+# active_color = "green"
+
+# Custom namespace
+# namespace = "my-blue-green"
+
+# Customize replicas
+# blue_replicas  = 2
+# green_replicas = 2
+
+# Custom versions
+# blue_version  = "1.0.0"
+# green_version = "2.0.0"

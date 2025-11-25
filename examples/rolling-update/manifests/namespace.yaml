@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rolling-update-demo
+  labels:
+    app: rolling-update-demo
+    strategy: rolling-update

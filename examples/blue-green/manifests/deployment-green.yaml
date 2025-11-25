@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-green
+  namespace: blue-green-demo
+  labels:
+    app: showcase-app
+    version: green
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: showcase-app
+      version: green
+  template:
+    metadata:
+      labels:
+        app: showcase-app
+        version: green
+    spec:
+      containers:
+      - name: app
+        image: nginx:1.25-alpine
+        ports:
+        - containerPort: 80
+        env:
+        - name: APP_VERSION
+          value: "2.0.0"
+        - name: APP_COLOR
+          value: "green"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        volumeMounts:
+        - name: html-config
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: html-config
+        configMap:
+          name: app-green-html
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-green-html
+  namespace: blue-green-demo
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Blue/Green Demo - Green</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                margin: 0;
+                background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);
+            }
+            .container {
+                text-align: center;
+                background: white;
+                padding: 40px 60px;
+                border-radius: 16px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            }
+            h1 { color: #134e5e; }
+            .version { color: #28a745; font-size: 24px; margin: 20px 0; }
+            .indicator {
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+                background: #28a745;
+                margin: 20px auto;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Blue/Green Deployment</h1>
+            <p class="version">Version: 2.0.0</p>
+            <div class="indicator">GREEN</div>
+            <p>This is the <strong>Green</strong> deployment</p>
+        </div>
+    </body>
+    </html>

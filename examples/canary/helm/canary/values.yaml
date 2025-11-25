@@ -1,0 +1,59 @@
+# Default values for canary deployment
+
+# Stable deployment configuration
+stable:
+  enabled: true
+  replicaCount: 9
+  version: "1.0.0"
+  image:
+    repository: nginx
+    tag: 1.25-alpine
+    pullPolicy: IfNotPresent
+
+# Canary deployment configuration  
+canary:
+  enabled: false
+  replicaCount: 1
+  version: "2.0.0"
+  weight: 10  # Percentage of traffic to canary (for ingress-based)
+  image:
+    repository: nginx
+    tag: 1.25-alpine
+    pullPolicy: IfNotPresent
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+
+# Resource limits
+resources:
+  limits:
+    cpu: 200m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 64Mi
+
+# Probes configuration
+probes:
+  liveness:
+    path: /
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  readiness:
+    path: /
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+# Ingress configuration for weighted routing
+ingress:
+  enabled: false
+  className: nginx
+  host: canary-demo.local
+  annotations: {}
+
+# Namespace configuration
+namespace:
+  create: true
+  name: canary-demo

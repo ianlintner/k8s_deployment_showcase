@@ -1,0 +1,53 @@
+{{- if .Values.canary.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "canary.fullname" . }}-canary-html
+  labels:
+    {{- include "canary.labels" . | nindent 4 }}
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Canary Demo - Canary</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                margin: 0;
+                background: linear-gradient(135deg, #f46b45 0%, #eea849 100%);
+            }
+            .container {
+                text-align: center;
+                background: white;
+                padding: 40px 60px;
+                border-radius: 16px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            }
+            h1 { color: #f46b45; }
+            .version { color: #ff8c00; font-size: 24px; margin: 20px 0; }
+            .status {
+                padding: 10px 20px;
+                background: #ff8c00;
+                color: white;
+                border-radius: 20px;
+                display: inline-block;
+                margin: 10px 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Canary Deployment Demo</h1>
+            <p class="version">Version: {{ .Values.canary.version }}</p>
+            <div class="status">CANARY 🐤</div>
+            <p>This is the <strong>Canary</strong> version</p>
+            <p><small>Deployed via Helm</small></p>
+        </div>
+    </body>
+    </html>
+{{- end }}

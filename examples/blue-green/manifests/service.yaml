@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service
+  namespace: blue-green-demo
+  labels:
+    app: showcase-app
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: showcase-app
+    version: blue  # Switch between 'blue' and 'green' to change active version

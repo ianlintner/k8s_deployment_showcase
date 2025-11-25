@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-production
+  namespace: shadow-demo
+  labels:
+    app: showcase-app
+    version: production
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: showcase-app
+      version: production
+  template:
+    metadata:
+      labels:
+        app: showcase-app
+        version: production
+    spec:
+      containers:
+      - name: app
+        image: nginx:1.25-alpine
+        ports:
+        - containerPort: 80
+        env:
+        - name: APP_VERSION
+          value: "1.0.0"
+        - name: APP_COLOR
+          value: "blue"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        volumeMounts:
+        - name: html-config
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: html-config
+        configMap:
+          name: app-production-html
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-production-html
+  namespace: shadow-demo
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Shadow Demo - Production</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                margin: 0;
+                background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            }
+            .container {
+                text-align: center;
+                background: white;
+                padding: 40px 60px;
+                border-radius: 16px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            }
+            h1 { color: #1e3c72; }
+            .version { color: #0066cc; font-size: 24px; margin: 20px 0; }
+            .status {
+                padding: 10px 20px;
+                background: #0066cc;
+                color: white;
+                border-radius: 20px;
+                display: inline-block;
+                margin: 10px 0;
+            }
+            .icon { font-size: 48px; margin: 20px 0; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Shadow/Mirroring Demo</h1>
+            <p class="version">Version: 1.0.0</p>
+            <div class="icon">☀️</div>
+            <div class="status">PRODUCTION</div>
+            <p>This is the <strong>Production</strong> version</p>
+            <p><small>Responses are returned to users</small></p>
+        </div>
+    </body>
+    </html>
